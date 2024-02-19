@@ -2,6 +2,7 @@ import Express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import DB from "./DB";
+import Routes from "./Routes/Routes";
 
 class Server {
   private _port: any;
@@ -14,6 +15,8 @@ class Server {
 
   loadMiddlewares(): Server {
     this._app.use(bodyParser.json());
+    const router = new Routes();
+    this._app.use(router.getRoutes());
     return this;
   }
 

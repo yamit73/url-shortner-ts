@@ -1,12 +1,13 @@
-import { user, User as UserInterface } from "../../Interfaces/User";
+import { user, IUser as UserInterface } from "../../Interfaces/User";
+import { ApiResponse } from "../../Interfaces/Response";
 
 class User implements UserInterface {
-  getUser(req: any, res: any): any {
-    return res.json({ success: true, msg: "Hello there! from getUser" });
+  getUser(req: any, res: any): ApiResponse {
+    return res.json({ success: true, data: "Hello there! from getUser" });
   }
 
-  deleteUser(req: any, res: any): any {
-    return res.json({ success: true, msg: "Hello there! from deleteUser" });
+  deleteUser(req: any, res: any): ApiResponse {
+    return res.json({ success: true, data: "Hello there! from deleteUser" });
   }
 }
 

@@ -1,10 +1,14 @@
+import { ApiResponse } from "./Response";
+
 type user = {
   email: string;
   password: string;
   name: string;
 };
 
-interface User {
-  getUser(req: any, res: any): any;
-  deleteUser(req: any, res: any): any;
+interface IUser {
+  getUser(req: any, res: any): ApiResponse;
+  deleteUser(req: any, res: any): ApiResponse;
 }
+
+export { user, IUser };
