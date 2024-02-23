@@ -1,3 +1,4 @@
+import { User } from "../Models/User";
 import { ApiResponse } from "./Response";
 
 type user = {
@@ -7,8 +8,12 @@ type user = {
 };
 
 interface IUser {
+  userModel: User;
+
   getUser(req: any, res: any): ApiResponse;
   deleteUser(req: any, res: any): ApiResponse;
+  signup(req: any, res: any): ApiResponse;
+  signin(req: any, res: any): ApiResponse;
 }
 
 export { user, IUser };
