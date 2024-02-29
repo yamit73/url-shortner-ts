@@ -20,8 +20,9 @@ class Routes implements IRoutes {
 
   userRoutes(): Router {
     const user = new User();
-    this._router.get("/user", user.getUser);
-    this._router.post("/user/signup", user.signup);
+    this._router.get("/user", user.getUser.bind(user));
+    this._router.post("/user/signup", user.signup.bind(user));
+    this._router.post("/user/signin", user.signin.bind(user));
     return this._router;
   }
 }

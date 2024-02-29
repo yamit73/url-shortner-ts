@@ -7,7 +7,7 @@ class User implements IUser {
   constructor() {
     this.model = this.createModel();
   }
-  async create(params: UserData): Promise<Document> {
+  async create(params: UserData) {
     try {
       const user = await this.model.create(params);
       return user;
@@ -16,16 +16,16 @@ class User implements IUser {
     }
   }
 
-  async getByEmail(email: string): Promise<Document | null> {
+  async getByEmail(email: string) {
     try {
-      const user = await this.model.findOne({ email: email });
+      const user = await this.model.findOne({ "email": email });
       return user;
     } catch (error) {
       throw error;
     }
   }
 
-  async getById(userId: string): Promise<Document | null> {
+  async getById(userId: string) {
     try {
       const user = await this.model.findById(userId);
       return user;
@@ -34,7 +34,7 @@ class User implements IUser {
     }
   }
 
-  async deleteById(userId: string): Promise<Document | null> {
+  async deleteById(userId: string) {
     try {
       const user = await this.model.findOneAndDelete({ _id: userId });
       return user;

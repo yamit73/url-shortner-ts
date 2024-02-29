@@ -10,10 +10,7 @@ class Password implements IPassword {
 
   async encrypt(): Promise<string> {
     try {
-      const hashedPassword = await bcrypt.hash(
-        this.password,
-        process.env.SALT_ROUND ?? 10
-      );
+      const hashedPassword = await bcrypt.hash(this.password, 10);
       return hashedPassword;
     } catch (error) {
       throw error;
@@ -31,7 +28,7 @@ class Password implements IPassword {
 
   validate(): boolean {
     let valid = false;
-    if (this.password.length < 11) {
+    if (this.password.length < 10) {
       return valid;
     }
     let isLetter = false,
@@ -57,8 +54,9 @@ class Password implements IPassword {
     return this.password;
   }
 
-  setPassword(password: string): void {
+  setPassword(password: string) {
     this.password = password;
+    return this;
   }
 }
 

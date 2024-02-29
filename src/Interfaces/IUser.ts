@@ -12,8 +12,8 @@ interface IUser {
 
   getUser(req: any, res: any): ApiResponse;
   deleteUser(req: any, res: any): ApiResponse;
-  signup(req: any, res: any): ApiResponse;
-  signin(req: any, res: any): ApiResponse;
+  signup(req: any, res: any): Promise<ApiResponse>;
+  signin(req: any, res: any): Promise<ApiResponse>;
 }
 
 export { user, IUser };

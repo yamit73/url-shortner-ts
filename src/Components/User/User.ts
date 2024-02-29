@@ -9,10 +9,9 @@ class User implements UserInterface {
 
   constructor() {
     this.userModel = new UserModel();
-    // this.validateSignParams = this.validateSignParams.bind(this);
   }
 
-  signup(req: any, res: any): ApiResponse {
+  async signup(req: any, res: any) {
     let response: ApiResponse = {
       success: false,
       errors: [],
@@ -22,42 +21,34 @@ class User implements UserInterface {
       response.errors!.push("No data found");
       return res.status(400).json(response);
     }
-    console.log(rawBody);
-    const isValidParams = this?.validateSignParams(rawBody);
+    const isValidParams = this.validateSignParams(rawBody);
     if (isValidParams.success) {
-      this.userModel
-        .getByEmail(rawBody.email)
-        .then((user) => {
-          if (user) {
-            response.errors?.push("User with same email already exists!!");
-            return res.status(400).json(response);
-          }
-          return this._passwordObj.encrypt();
-        })
-        .then((hashedPassword: string) => {
-          return this.userModel.create({
-            full_name: rawBody.full_name,
-            email: rawBody.email,
-            password: hashedPassword,
-            phone_number: rawBody.phone,
-          });
-        })
-        .then((user) => {
-          res.status(200);
-          response = {
-            success: true,
-            data: { user_id: user._id.toString() },
-          };
-        });
+      const user = await this.userModel.getByEmail(rawBody.email);
+      if (user) {
+        response.errors?.push("User with same email already exists!!");
+        return res.json(response);
+      }
+      const hashedPassword: string = await this._passwordObj.encrypt();
+      const userCreateResp = await this.userModel.create({
+        full_name: rawBody.full_name,
+        email: rawBody.email,
+        password: hashedPassword,
+        phone_number: rawBody.phone,
+      });
+      res.status(200);
+      response = {
+        success: true,
+        data: { user_id: userCreateResp._id.toString() },
+      };
     } else {
       res.status(400);
       response = isValidParams;
     }
-
+    console.log(response);
     return res.json(response);
   }
 
-  signin(req: any, res: any): ApiResponse {
+  async signin(req: any, res: any) {
     let response: ApiResponse = {
       success: false,
       errors: [],
@@ -69,30 +60,20 @@ class User implements UserInterface {
     }
     const validateUserResponse = this?.validateSignParams(rawBody);
     if (validateUserResponse.success) {
-      this.userModel
-        .getByEmail(rawBody.email)
-        .then((dbUser) => {
-          if (dbUser === null) {
-            response.errors?.push("User not found, kindly signup!!");
-            return res.status(400).json(response);
-          }
-          return this._passwordObj
-            .setPassword(rawBody.password)
-            .match(dbUser?.password ?? "")
-            .then((matched: boolean) => {
-              if (!matched) {
-                response.errors?.push("Invalid password!");
-                return res.status(400).json(response);
-              }
-              response.success = true;
-              response.data = dbUser;
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-          res.status(500);
-          response.errors?.push("Internal server error!!");
-        });
+      const dbUser = await this.userModel.getByEmail(rawBody.email);
+      if (dbUser === null) {
+        response.errors?.push("User not found, kindly signup!!");
+        return res.status(400).json(response);
+      }
+      const passwordMatched = await this._passwordObj
+        .setPassword(rawBody.password)
+        .match(dbUser?.password ?? "");
+      if (!passwordMatched) {
+        response.errors?.push("Invalid password!");
+        return res.status(400).json(response);
+      }
+      response.success = true;
+      response.data = dbUser;
     } else {
       res.status(404);
       response = validateUserResponse;
@@ -108,7 +89,7 @@ class User implements UserInterface {
     return res.json({ success: true, data: "Hello there! from deleteUser" });
   }
 
-  protected validateSignParams(rawBody: any): ApiResponse {
+  private validateSignParams(rawBody: any): ApiResponse {
     let response: ApiResponse = {
       success: true,
       errors: [],
