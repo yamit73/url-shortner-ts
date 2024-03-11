@@ -44,7 +44,6 @@ class User implements UserInterface {
       res.status(400);
       response = isValidParams;
     }
-    console.log(response);
     return res.json(response);
   }
 
