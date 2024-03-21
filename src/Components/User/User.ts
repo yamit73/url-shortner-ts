@@ -2,6 +2,7 @@ import { user, IUser as UserInterface } from "../../Interfaces/IUser";
 import { ApiResponse } from "../../Interfaces/Response";
 import { User as UserModel } from "../../Models/User";
 import { Password } from "./Password";
+import { Token } from "./Token";
 
 class User implements UserInterface {
   userModel: UserModel;
@@ -35,10 +36,15 @@ class User implements UserInterface {
         password: hashedPassword,
         phone_number: rawBody.phone,
       });
+      const tokenPayload = {
+        user_id: userCreateResp._id.toString(),
+      };
+      const toeknObj = new Token();
+      const token = await toeknObj.generate(tokenPayload);
       res.status(200);
       response = {
         success: true,
-        data: { user_id: userCreateResp._id.toString() },
+        data: { user_id: userCreateResp._id.toString(), token: token },
       };
     } else {
       res.status(400);

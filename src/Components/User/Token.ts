@@ -1,12 +1,24 @@
-import { Jwt } from "jsonwebtoken";
+import Jwt, { JwtPayload } from "jsonwebtoken";
 import fs from "fs/promises";
 import { IToken } from "../../Interfaces/IToken";
 
 class Token implements IToken {
-  async generate() {
+  passphrase: string = "amit";
+
+  async generate(payload: {}) {
     try {
+      if (!payload) {
+        throw new Error("Payload is required!");
+      }
       const privateKey = await this.loadPrivateKey();
-      const token = "";
+      const token = Jwt.sign(
+        payload,
+        { key: privateKey, passphrase: this.passphrase },
+        {
+          algorithm: "RS256",
+          expiresIn: "2h",
+        }
+      );
       return token;
     } catch (error) {
       throw error;
@@ -16,17 +28,19 @@ class Token implements IToken {
   async validate(token: string) {
     try {
       const publicKey = await this.loadPublicKey();
+      const tokenData = Jwt.verify(publicKey, token);
+      return tokenData;
     } catch (error) {
       throw error;
     }
-    return true;
   }
+
   private async loadPrivateKey(): Promise<string> {
-    const key = await fs.readFile("././././security/private-key.pem");
+    const key = await fs.readFile("/home/cedcoss/Node/filereader/security/private.pem");
     return key.toString();
   }
   private async loadPublicKey(): Promise<string> {
-    const key = await fs.readFile("./././././security/public-key.p");
+    const key = await fs.readFile("/home/cedcoss/Node/filereader/security/public.pem");
     return key.toString();
   }
 }

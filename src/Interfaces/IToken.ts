@@ -1,6 +1,8 @@
+import { JwtPayload } from "jsonwebtoken";
+
 interface IToken {
-  generate(): Promise<string>;
-  validate(token: string): Promise<boolean>;
+  generate(payload: {}): Promise<string>;
+  validate(token: string): Promise<string | JwtPayload>;
 }
 
 export { IToken };

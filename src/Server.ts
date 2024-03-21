@@ -1,11 +1,13 @@
 import Express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import bodyParser from "body-parser";
 import DB from "./DB";
 import Routes from "./Routes/Routes";
+import { Middleware } from "./Components/Middleware/Middleware";
 
 class Server {
-  private _port: any;
+  private _port: number | string;
   public _app: any;
   constructor() {
     dotenv.config({ path: "./config.env" });
@@ -14,9 +16,13 @@ class Server {
   }
 
   loadMiddlewares(): Server {
+    this._app.use(cors());
     this._app.use(bodyParser.json());
     const router = new Routes();
+    const middleware = new Middleware();
+    this._app.use(middleware.beforeHandleRequest.bind(middleware));
     this._app.use(router.getRoutes());
+    this._app.use(middleware.errorHandler.bind(middleware));
     return this;
   }
 
